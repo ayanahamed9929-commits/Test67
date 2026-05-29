@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enterprise Secure Portal</title>
+
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
+}
+
+body {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: radial-gradient(circle at 10% 20%, #1e293b 0%, #0f172a 90%);
+  color: #f8fafc;
+}
+
+.login-container {
+  width: 400px;
+  padding: 40px 30px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.brand-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.brand-icon {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px auto;
+  font-size: 24px;
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+}
+
+h2 {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  background: linear-gradient(to right, #fff, #cbd5e1);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #94a3b8;
+  margin-top: 4px;
+}
+
+.input-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: #94a3b8;
+  margin-bottom: 6px;
+}
+
+.input-wrapper {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.input-wrapper i {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #64748b;
+  font-size: 18px;
+  transition: color 0.3s;
+}
+
+.input {
+  width: 100%;
+  padding: 14px 14px 14px 44px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(15, 23, 42, 0.6);
+  color: #fff;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.25s ease;
+}
+
+.input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+  background: rgba(15, 23, 42, 0.8);
+}
+
+.input:focus + i {
+  color: #3b82f6;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #64748b;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.toggle-password:hover {
+  color: #fff;
+}
+
+.btn {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  color: white;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.35);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.otp-section {
+  display: none;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  animation: fadeIn 0.4s ease;
+}
+
+.timer {
+  font-size: 12px;
+  color: #94a3b8;
+  text-align: right;
+  margin-top: -12px;
+  margin-bottom: 16px;
+}
+
+#msg {
+  margin-top: 20px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 10px;
+  border-radius: 8px;
+  display: none;
+}
+
+.msg-success { background: rgba(16, 185, 129, 0.1); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.2); }
+.msg-error { background: rgba(239, 68, 68, 0.1); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.2); }
+.msg-info { background: rgba(59, 130, 246, 0.1); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.2); }
+</style>
+</head>
+<body>
+
+<div class="login-container">
+  <div class="brand-header">
+    <div class="brand-icon"><i class="ri-shield-keyhole-line"></i></div>
+    <h2>Welcome Back</h2>
+    <p class="subtitle">Enter details to access your account</p>
+  </div>
+
+  <div id="loginForm">
+    <label class="input-label">Email Address</label>
+    <div class="input-wrapper">
+      <input class="input" id="email" type="email" placeholder="name@company.com" required>
+      <i class="ri-mail-line"></i>
+    </div>
+
+    <label class="input-label">Password</label>
+    <div class="input-wrapper">
+      <input class="input" id="password" type="password" placeholder="••••••••" required>
+      <i class="ri-lock-line"></i>
+      <i class="ri-eye-off-line toggle-password" id="passwordToggle" onclick="togglePasswordVisibility()"></i>
+    </div>
+
+    <button class="btn" id="sendBtn" onclick="handleLoginRequest()">
+      <span>Request OTP Code</span>
+      <i class="ri-arrow-right-line"></i>
+    </button>
+  </div>
+
+  <div class="otp-section" id="otpSection">
+    <label class="input-label">Two-Factor Authentication Code</label>
+    <div class="input-wrapper">
+      <input class="input" id="otp" type="text" maxlength="6" placeholder="Enter 6-digit OTP" autocomplete="off">
+      <i class="ri-door-lock-line"></i>
+    </div>
+    <div class="timer" id="timerDisplay">Expires in: 05:00</div>
+
+    <button class="btn" id="verifyBtn" onclick="verifyOTP()" style="background: linear-gradient(135deg, #10b981, #047857); box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);">
+      <i class="ri-checkbox-circle-line"></i>
+      <span>Verify & Login</span>
+    </button>
+  </div>
+
+  <div id="msg"></div>
+</div>
+
+<script>
+// EmailJS Initialization
+emailjs.init("4_MIqdppjUIeEWApn");
+
+// State Management Wrapper
+const AuthSystem = (function() {
+  let secureHash = null;
+  let expiresAt = null;
+  let timerId = null;
+
+  function simpleHash(str) {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      hash = (hash << 5) - hash + str.charCodeAt(i);
+      hash |= 0;
+    }
+    return hash.toString();
+  }
+
+  return {
+    generateOTP: function() {
+      const code = Math.floor(100000 + Math.random() * 900000).toString();
+      secureHash = simpleHash(code);
+      expiresAt = Date.now() + 5 * 60 * 1000; // 5 mins
+      return code;
+    },
+    validate: function(input) {
+      if (Date.now() > expiresAt) {
+        this.reset();
+        return { valid: false, reason: 'expired' };
+      }
+      if (simpleHash(input) === secureHash) {
+        this.reset();
+        return { valid: true };
+      }
+      return { valid: false, reason: 'wrong' };
+    },
+    reset: function() {
+      secureHash = null;
+      expiresAt = null;
+      clearInterval(timerId);
+    },
+    startCountdown: function(display) {
+      clearInterval(timerId);
+      const update = () => {
+        const diff = expiresAt - Date.now();
+        if (diff <= 0) {
+          clearInterval(timerId);
+          display.innerText = "Code Expired";
+          document.getElementById("otp").disabled = true;
+          document.getElementById("verifyBtn").disabled = true;
+          return;
+        }
+        const m = Math.floor(diff / 60000).toString().padStart(2, '0');
+        const s = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
+        display.innerText = `Expires in: ${m}:${s}`;
+      };
+      update();
+      timerId = setInterval(update, 1000);
+    }
+  };
+})();
+
+function showNotification(text, styleClass) {
+  const msgBox = document.getElementById("msg");
+  msgBox.innerText = text;
+  msgBox.className = `msg-${styleClass}`;
+  msgBox.style.display = "block";
+}
+
+function togglePasswordVisibility() {
+  const passInput = document.getElementById("password");
+  const toggleIcon = document.getElementById("passwordToggle");
+  if (passInput.type === "password") {
+    passInput.type = "text";
+    toggleIcon.className = "ri-eye-line toggle-password";
+  } else {
+    passInput.type = "password";
+    toggleIcon.className = "ri-eye-off-line toggle-password";
+  }
+}
+
+function handleLoginRequest() {
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+  const sendBtn = document.getElementById("sendBtn");
+
+  if (!email || !password) {
+    showNotification("⚠️ Please fill in all fields.", "error");
+    return;
+  }
+  
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    showNotification("⚠️ Invalid email format.", "error");
+    return;
+  }
+
+  // Loading State
+  sendBtn.disabled = true;
+  sendBtn.innerHTML = `<span>Sending Secure Code...</span>`;
+  showNotification("Connecting to authentication server...", "info");
+
+  const generatedCode = AuthSystem.generateOTP();
+
+  const emailParams = {
+    to_email: email,
+    message: "Your secure authentication token is: " + generatedCode
+  };
+
+  emailjs.send("service_maku80a", "template_wrrgtpq", emailParams)
+  .then(() => {
+    sendBtn.innerHTML = `<span>Resend OTP</span> <i class="ri-arrow-right-line"></i>`;
+    sendBtn.disabled = false;
+    
+    // Smooth appearance of OTP fields
+    document.getElementById("otpSection").style.display = "block";
+    document.getElementById("otp").disabled = false;
+    document.getElementById("verifyBtn").disabled = false;
+    document.getElementById("otp").focus();
+    
+    AuthSystem.startCountdown(document.getElementById("timerDisplay"));
+    showNotification("✅ Security code sent to your email.", "success");
+  })
+  .catch((err) => {
+    sendBtn.innerHTML = `<span>Request OTP Code</span> <i class="ri-arrow-right-line"></i>`;
+    sendBtn.disabled = false;
+    showNotification("❌ Verification dispatch failed.", "error");
+    console.error(err);
+  });
+}
+
+function verifyOTP() {
+  const otpVal = document.getElementById("otp").value.trim();
+  if (otpVal.length !== 6) {
+    showNotification("⚠️ Enter the full 6-digit code.", "error");
+    return;
+  }
+
+  const output = AuthSystem.validate(otpVal);
+
+  if (output.valid) {
+    showNotification("🎉 Authorization Successful! Redirecting...", "success");
+    document.getElementById("otp").disabled = true;
+    document.getElementById("verifyBtn").disabled = true;
+    document.getElementById("timerDisplay").style.display = "none";
+  } else {
+    if (output.reason === "expired") {
+      showNotification("❌ Verification timeline expired. Request new OTP.", "error");
+    } else {
+      showNotification("❌ Invalid verification token.", "error");
+    }
+  }
+}
+
+// Input restriction for digits only
+document.getElementById("otp").addEventListener("input", function() {
+  this.value = this.value.replace(/[^0-9]/g, '');
+});
+</script>
+
+</body>
+</html>
